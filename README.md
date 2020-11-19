@@ -13,7 +13,7 @@ It is to mention the current split mechanism is a brute force looking for best c
 
 Timeline for McDonald's history
 
-![Timeline](../master/Capture.png)
+![Timeline](../master/Capture.PNG)
 
 ### Contribution
 
