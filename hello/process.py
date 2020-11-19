@@ -66,17 +66,22 @@ def splitter(arr):
 def get_best_split(timeline, text):
     a = np.array([(datetime.datetime.utcnow() - date[0]).days for date in timeline])[:15]
     reverse_timeline = dict(zip(a, timeline))
-    minimum = 999999999
-    best_split = None
-    for split in splitter(a):
-        std_ = std(split)
-        if(std_ < minimum):
-            minimum = std_
-            best_split = split
+    
+    if(len(timeline)>2):
+        minimum = 999999999
+        best_split = None
+        for split in splitter(a):
+            std_ = std(split)
+            if(std_ < minimum):
+                minimum = std_
+                best_split = split
+        
+        best_split = [list(arrayLike) for arrayLike in best_split]
+        flattened = [[item, best_split.index(sublist)] for sublist in best_split for item in sublist]
+    else:
+        flattened = [[item,item] for item in a.tolist()]
+    
     stacked_result = []
-    best_split = [list(arrayLike) for arrayLike in best_split]
-    logging.debug(best_split)
-    flattened = [[item, best_split.index(sublist)] for sublist in best_split for item in sublist]
     for key in flattened:
         category = key[1]
         key_ = key[0]
