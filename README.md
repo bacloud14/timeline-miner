@@ -9,6 +9,12 @@ Otherwise, based on algorithm and UI from both, I reworked the algorithm with a 
 
 It is to mention the current split mechanism is a brute force looking for best continuous sub-arrays with minimal standard deviation. 
 
+### UI
+
+Timeline for McDonald's history
+
+![Timeline](Capture.png)
+
 ### Contribution
 
 Please see open issues, fork and pull request after manually testing some CSV files:
