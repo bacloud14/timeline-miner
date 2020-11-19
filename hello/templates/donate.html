@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+
+
+  <h2>Donations accepted</h2>
+  <p>After working for a big IT company on big data projects, I am giving my time to open source projects.
+    Now that I am independent, it seems more trouble-free but less rewarding and far from being effortless and painless.
+  If you like my work, you can donate using Paypal, Patreon or other options. <b>Any amount counts a lot. Thank you in advance !</b></p>
+  <hr>  
+  <h3>Paypal</h3>
+  <form action="https://www.paypal.com/donate" method="post" target="_top">
+    <input type="hidden" name="hosted_button_id" value="SBLJBQUWRKRWY" />
+    <input type="image" src="https://www.paypalobjects.com/en_US/FR/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+    <img alt="" border="0" src="https://www.paypal.com/en_FR/i/scr/pixel.gif" width="1" height="1" />
+  </form>
+  <hr>  
+  <p>You can use QR code to donate like using the button</p>
+  <img src="{% static 'QR code.png'%}">
+
+  <h3>Patreon</h3>
+  
+</div>
+
+{% endblock %}

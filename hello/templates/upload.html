@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+   <h2>Timeline mining</h2>
+   <p>Timeline miner is a free online service than extracts dates from English text. It relies on Machine Learning (ML) and Natural Language Processing (NLP) algorithms.</p>
+   <h2>Accuracy</h2>
+   <p>As any text, facts and time events can be ambiguous to the point it misleads the reader. Even when the text is very well written, long sentenses can be misleading too. This is to say, we take no responsibility on the accuraccy of the service. You should revise results!</p>
+   <h2>Limits</h2>
+   <p>NLP Algorithms, out of the box can find events arround dates in a text, however we have worked hard in an attempt to also deduce big time sections. <i>These sections are colorized where each color is a sequence of events that are probably related.</i></p>
+   <p>Also, It only support English for the moment, technically some of other languages (French, Spanish, ...) should not differ and can be added instantly; Unfortunately learing models are huge and greedy on computing power and it is a little beyond what we have at this moment.</p>
+   <p>If you want to see other languages and support the service in general, we accept donations through <a href="/donate">donation page.</a> We promise other languages in near future anyway.</p>
+   <hr>
+   <form action="/upload/" method="post">
+    <div class="input-group-text">
+        <div class="g-recaptcha" data-sitekey="6Ldq5uMZAAAAAFtEWdrLgMChWR453Iza9mSCPO4C"></div>
+    </div>
+      <div class="form-group">
+         {% csrf_token %}
+         {{ form }}
+         <div class="alert alert-warning" role="alert">
+            {{ errors }}
+         </div>            
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+   </form>
+   <hr>
+   <h4>Raw events</h4>
+   <div class= "bd-example">
+      <span class="d-block p-2 bg-dark text-white">
+      {{ result }}
+      </span>
+   </div>
+   <h4>Timeline</h4>
+   <div class= "bd-example">
+      <div id="timeline"></div>
+   </div>
+   <hr>
+   <button onclick="exportCode()" class="btn"> Export HTML</button>
+   <p class="text-success">You can copy HTML wherever you want!</p>
+   <pre id="out">
+   </pre>
+</div>
+{% load js %}
+<script type="text/javascript">
+    function exportCode() {
+        var style = '<style>.timeline li{list-style-type:none;position:relative;padding-left:1em;padding-bottom:1em}.timeline li>time+time:before{content:"/"}.timeline li{border-left:2px solid black}.timeline dl,.timeline li{margin:0}.timeline li>time{position:absolute;left:-3.5em}.timeline li>time+time{top:1em;left:-3.85em}.timeline li>cite{font-size:1.5em;line-height:1em;padding-bottom:.5em}.timeline dl{padding-left:1.5em}.timeline li>time:first-of-type:after{content:"\2022";font-size:3em;line-height:.4em;position:absolute;right:-0.65em;top:.1em}.timeline li dl{max-height:0;overflow:hidden;transition:max-height 500ms ease-in-out}.timeline li>cite{cursor:pointer;display:block}.timeline li.expanded dl{max-height:40em}</style>';
+        var script = '<script type="text/javascript">var clicked=function(ev){if (ev.target.nodeName==="CITE"){var li=ev.target.parentNode; if (li.className==="expanded"){li.className="";}else{li.className="expanded";}}}; document.getElementById("timeline").addEventListener("click", clicked);<\/script>';
+        var str = document.getElementsByClassName("bd-example")[1].innerHTML
+        var div = document.createElement('div');
+        div.innerHTML = str.trim();
+        document.getElementById('out').textContent = format(div, 0).innerHTML+script+style;
+    }
+
+    function format(node, level) {
+        var indentBefore = new Array(level++ + 1).join('  '),
+            indentAfter  = new Array(level - 1).join('  '),
+            textNode;
+        for (var i = 0; i < node.children.length; i++) {
+            textNode = document.createTextNode('\n' + indentBefore);
+            node.insertBefore(textNode, node.children[i]);
+            format(node.children[i], level);
+            if (node.lastElementChild == node.children[i]) {
+                textNode = document.createTextNode('\n' + indentAfter);
+                node.appendChild(textNode);
+            }
+        }
+        return node;
+    }
+    function getRandColor(brightness){
+        // Six levels of brightness from 0 to 5, 0 being the darkest
+        var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
+        var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
+        var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0)})
+        return "rgb(" + mixedrgb.join(",") + ", 0.3)";
+    }
+  function renderResults(a){
+       var descTerms = [{
+               key: "event",
+               label: "Event"
+           },
+           {
+               key: "full",
+               label: "Full context"
+           }
+       ];
+       var container = document.getElementById("timeline");
+       var list = document.createElement("ol");
+       list.className = "timeline";
+       container.appendChild(list);
+       lastColor = 0;
+       newColor = getRandColor(0);
+       a.forEach(function(play) {
+           var listItem = document.createElement("li");
+           if(play.category != lastColor)
+                {
+                    lastColor = play.category
+                    newColor = getRandColor(play.category);
+                }
+           listItem.style.backgroundColor = newColor;
+           if (play.date.indexOf(" ") !== -1) {
+               var dates = play.date.split(" ");
+               var time = document.createElement("time");
+               time.textContent = dates[0];
+               listItem.appendChild(time);
+               time = document.createElement("time");
+               time.textContent = dates[1];
+               listItem.appendChild(time);
+           } else {
+               var time = document.createElement("time");
+               time.textContent = play.date;
+               listItem.appendChild(time);
+           }
+           var cite = document.createElement("cite");
+           cite.textContent = play.play;
+           listItem.appendChild(cite);
+           var descList = document.createElement("dl");
+           descTerms.forEach(function(term) {
+               if (play[term.key]) {
+                   var descTerm = document.createElement("dt");
+                   descTerm.textContent = term.label;
+                   descList.appendChild(descTerm);
+                   var descElem = document.createElement("dd");
+                   descElem.textContent = play[term.key];
+                   descList.appendChild(descElem);
+               }
+           });
+           listItem.appendChild(descList);
+           list.appendChild(listItem);
+       })
+   
+       var clicked = function(ev) {
+           if (ev.target.nodeName === "CITE") {
+               var li = ev.target.parentNode;
+               if (li.className === "expanded") {
+                   li.className = "";
+               } else {
+                   li.className = "expanded";
+               }
+           }
+       };
+   
+       document.getElementById("timeline").addEventListener("click", clicked);
+   }
+  var a = JSON.parse("{{ json_result | js | escapejs }}");
+  if(a!=""){
+    renderResults(a)
+  }else{
+    console.log('SERVER ERROR')
+  }
+</script>
+<style>
+    .timeline li {
+        list-style-type: none;
+        position: relative;
+        padding-left: 1em;
+        padding-bottom: 1em;
+    }
+
+    .timeline li>time+time:before {
+        content: "/";
+    }
+
+    .timeline li {
+        border-left: 2px solid black;
+    }
+
+    .timeline dl,
+    .timeline li {
+        margin: 0;
+    }
+
+    .timeline li>time {
+        position: absolute;
+        left: -3.5em;
+    }
+
+    .timeline li>time+time {
+        top: 1em;
+        left: -3.85em;
+    }
+
+    .timeline li>cite {
+        font-size: 1.5em;
+        line-height: 1em;
+        padding-bottom: 0.5em;
+    }
+
+    .timeline dl {
+        padding-left: 1.5em;
+    }
+
+    .timeline li>time:first-of-type:after {
+        content: "\2022";
+        font-size: 3em;
+        line-height: 0.4em;
+        position: absolute;
+        right: -0.65em;
+        top: 0.1em;
+    }
+
+    .timeline li dl {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 500ms ease-in-out;
+    }
+
+    .timeline li>cite {
+        cursor: pointer;
+        display: block;
+    }
+
+    .timeline li.expanded dl {
+        max-height: 40em;
+    }
+</style>
+{% endblock %}
+
