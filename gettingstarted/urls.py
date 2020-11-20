@@ -1,6 +1,7 @@
 from django.urls import path, include
 
 from django.contrib import admin
+from django.views.generic.base import TemplateView
 
 admin.autodiscover()
 
@@ -19,4 +20,6 @@ urlpatterns = [
     path("donate/", hello.views.donate, name="donate"),
     path("upload/", hello.views.upload, name="upload"),
     path("admin/", admin.site.urls),
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+    )
 ]

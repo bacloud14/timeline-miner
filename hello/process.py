@@ -80,24 +80,34 @@ def get_best_split(timeline, text):
         flattened = [[item, best_split.index(sublist)] for sublist in best_split for item in sublist]
     else:
         flattened = [[item,item] for item in a.tolist()]
-    
     stacked_result = []
+    seen = []
     for key in flattened:
-        category = key[1]
         key_ = key[0]
-        mined = reverse_timeline[key_][2]
-        sentence_ = ""
-        if(len(mined)<60):
+        category = key[1]
+        mined_event = reverse_timeline[key_][2]
+        date = reverse_timeline[key_][1]
+        # Two dates same event
+        # It should be date1 to date2  
+        if(mined_event in seen):
+            for result in stacked_result:
+                if(result["event"] == mined_event):
+                    result["date"] = result["date"]+" to "+date
+            continue
+        else:
+            seen.append(mined_event)
+        full_sentence = ""
+        if(len(mined_event)<60):
             text = split_into_sentences(str(text))
             for sentence in text:                
-                if( mined in sentence):
-                    sentence_ = sentence
+                if( mined_event in sentence):
+                    full_sentence = sentence
         
         stacked_result.append({
-                "date":reverse_timeline[key_][1], 
-                "play":mined[:80]+"...",
-                "event":mined,
-                "full":sentence_,
+                "date":date, 
+                "play":mined_event[:80]+"...",
+                "event":mined_event,
+                "full":full_sentence,
                 "category":category
             })
     return stacked_result

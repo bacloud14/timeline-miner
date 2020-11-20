@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-   <h2>Timeline mining</h2>
+   <h1>Timeline mining</h1>
    <p>Timeline miner is a free online service than extracts dates from English text. It relies on Machine Learning (ML) and Natural Language Processing (NLP) algorithms.</p>
-   <h2>Accuracy</h2>
+   <p class="h2">Accuracy</p>
    <p>As any text, facts and time events can be ambiguous to the point it misleads the reader. Even when the text is very well written, long sentenses can be misleading too. This is to say, we take no responsibility on the accuraccy of the service. You should revise results!</p>
-   <h2>Limits</h2>
+   <p class="h2">Limits</p>
    <p>NLP Algorithms, out of the box can find events arround dates in a text, however we have worked hard in an attempt to also deduce big time sections. <i>These sections are colorized where each color is a sequence of events that are probably related.</i></p>
    <p>Also, It only support English for the moment, technically some of other languages (French, Spanish, ...) should not differ and can be added instantly; Unfortunately learing models are huge and greedy on computing power and it is a little beyond what we have at this moment.</p>
    <p>If you want to see other languages and support the service in general, we accept donations through <a href="/donate">donation page.</a> We promise other languages in near future anyway.</p>
@@ -24,13 +24,13 @@
       <button type="submit" class="btn btn-primary">Submit</button>
    </form>
    <hr>
-   <h4>Raw events</h4>
+   <p class="h4">Raw events</p>
    <div class= "bd-example">
       <span class="d-block p-2 bg-dark text-white">
       {{ result }}
       </span>
    </div>
-   <h4>Timeline</h4>
+   <p class="h4">Timeline</p>
    <div class= "bd-example">
       <div id="timeline"></div>
    </div>
@@ -97,8 +97,8 @@
                     newColor = getRandColor(play.category);
                 }
            listItem.style.backgroundColor = newColor;
-           if (play.date.indexOf(" ") !== -1) {
-               var dates = play.date.split(" ");
+           if (play.date.indexOf(" to ") !== -1) {
+               var dates = play.date.split(" to ");
                var time = document.createElement("time");
                time.textContent = dates[0];
                listItem.appendChild(time);

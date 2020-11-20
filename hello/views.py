@@ -30,7 +30,7 @@ def donate(request):
 from .process import get_best_split, extract_events_spacy
 
 def upload(request):
-    nlp = load_model()
+    
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         form = NameForm(request.POST)
@@ -45,6 +45,7 @@ def upload(request):
             return render(request, "upload.html", {'errors': "You must verify captcha !", 'form': form})
         
         if form.is_valid():
+            nlp = load_model()
             text = (form.cleaned_data['your_text'])
             timeline = extract_events_spacy(text, nlp)
             gold = (get_best_split(timeline, text))
