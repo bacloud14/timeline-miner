@@ -15,6 +15,12 @@ Timeline for McDonald's history
 
 ![Timeline](../master/Capture.PNG)
 
+### Examples
+
+Through some random examples, you can see some bugs of functionality; So yes, so much work to do.
+
+[Featured examples](#../master/examples/)
+
 ### Contribution
 
 Please see open issues, fork and pull request after manually testing some CSV files:
