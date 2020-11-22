@@ -15,6 +15,7 @@ p = re.compile(r'\[\d+\]')
 
 def extract_events_spacy(line, nlp):
     line = p.sub('', line)
+    line = line.replace(',', '').replace('.', '').replace('\n', '').replace('\\', '').replace('/', '').replace('\'', '')
     events = []
     doc = nlp(line)
     for ent in filter(lambda e: e.label_ == 'DATE', list(doc.ents)):

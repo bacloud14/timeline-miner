@@ -27,7 +27,13 @@ def index(request):
 def donate(request):
     return render(request, "donate.html")
 
+# Create your views here.
+def examples(request):
+    return render(request, "examples.html")
+
+
 from .process import get_best_split, extract_events_spacy
+import re
 
 def upload(request):
     
@@ -47,6 +53,7 @@ def upload(request):
         if form.is_valid():
             nlp = load_model()
             text = (form.cleaned_data['your_text'])
+            text = re.sub('\[(\d)+\]', '', text) # remove references [\d]
             timeline = extract_events_spacy(text, nlp)
             gold = (get_best_split(timeline, text))
             return render(request, "upload.html", {'result': str(gold), 'form': form, 'json_result':gold})
